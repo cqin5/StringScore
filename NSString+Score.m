@@ -20,13 +20,8 @@
 }
 
 - (CGFloat) scoreAgainst:(NSString *)anotherString fuzziness:(NSNumber *)fuzziness options:(NSStringScoreOption)options{
-    NSMutableCharacterSet *workingInvalidCharacterSet = [NSCharacterSet lowercaseLetterCharacterSet];
-    [workingInvalidCharacterSet formUnionWithCharacterSet:[NSCharacterSet uppercaseLetterCharacterSet]];
-    [workingInvalidCharacterSet addCharactersInString:@" "];
-    NSCharacterSet *invalidCharacterSet = [workingInvalidCharacterSet invertedSet];
-    
-    NSString *string = [[[self decomposedStringWithCanonicalMapping] componentsSeparatedByCharactersInSet:invalidCharacterSet] componentsJoinedByString:@""];
-    NSString *otherString = [[[anotherString decomposedStringWithCanonicalMapping] componentsSeparatedByCharactersInSet:invalidCharacterSet] componentsJoinedByString:@""];
+    NSString *string = [[self decomposedStringWithCanonicalMapping] stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSString *otherString = [[anotherString decomposedStringWithCanonicalMapping] stringByReplacingOccurrencesOfString:@" " withString:@""];
     
     // If the string is equal to the abbreviation, perfect match.
     if([string isEqualToString:otherString]) return (CGFloat) 1.0f;
@@ -41,7 +36,7 @@
     CGFloat otherStringScore;
     CGFloat fuzzies = 1;
     CGFloat finalScore;
-        
+    
     // Walk through abbreviation and add up scores.
     for(uint index = 0; index < otherStringLength; index++){
         CGFloat characterScore = 0.1;
@@ -49,7 +44,7 @@
         NSString *chr;
         NSRange rangeChrLowercase;
         NSRange rangeChrUppercase;
-
+        
         chr = [otherString substringWithRange:NSMakeRange(index, 1)];
         
         //make these next few lines leverage NSNotfound, methinks.
@@ -112,7 +107,7 @@
     if(NSStringScoreOptionFavorSmallerWords == (options & NSStringScoreOptionFavorSmallerWords)){
         // Weigh smaller words higher
         return totalCharacterScore / stringLength;
-    } 
+    }
     
     otherStringScore = totalCharacterScore / otherStringLength;
     
